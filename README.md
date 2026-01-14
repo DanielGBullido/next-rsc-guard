@@ -19,6 +19,72 @@ This library provides pragmatic validation:
 npm install next-rsc-guard
 ```
 
+# ⚠️ Important: \_rsc is hidden by Next.js middleware
+
+In Next.js App Router, the internal \_rsc query parameter is not always visible in Middleware / Edge runtime.
+
+When a request reaches middleware.ts (or a custom Proxy using NextRequest), Next.js may strip or normalize \_rsc before exposing the request URL.
+
+As a result:
+
+- request.url may not include \_rsc
+- request.nextUrl.searchParams.has("\_rsc") may return false
+- Even if the client requested:
+
+```bash
+/products?_rsc=abc123
+```
+
+This behavior is intentional and consistent with Next.js design:
+RSC behavior is determined by request headers, not by trusting the \_rsc query parameter.
+
+#### Why this matters
+
+Many cache-abuse and bot scenarios involve injecting \_rsc directly into HTML URLs.
+Because \_rsc may be hidden at middleware level, the origin application cannot reliably detect these cases using request.url alone.
+
+#### Recommended approach
+
+To validate or normalize the real URL received by the CDN or edge layer, you must provide the original URI explicitly.
+
+#### Common approaches include:
+
+- Passing the original request URI via a header (for example X-Original-URI)
+- Performing \_rsc stripping or blocking directly at the CDN / edge (Fastly, Cloudflare, etc.)
+
+#### Example: using X-Original-URI
+
+If your CDN forwards the original path and query string in a header:
+
+```bash
+X-Original-URI: /products?_rsc=abc123
+```
+
+You can validate against the real URL like this:
+
+```bash
+const originalUri = request.headers.get("x-original-uri");
+
+const inputUrl = originalUri
+  ? new URL(originalUri, request.nextUrl.origin).toString()
+  : request.url;
+
+const result = validateRsc(inputUrl, request.headers, {
+  onNonFlightWithRsc: "strip",
+  onMismatch: "pass",
+});
+```
+
+This allows next-rsc-guard to:
+
+- Detect **\_rsc** even when Next.js hides it from **request.url**
+- Correctly identify bot / non-Flight abuse
+- Safely strip or block **\_rsc** before the request is processed further
+
+#### Security note
+
+If you rely on headers such as **X-Original-URI**, ensure they are only trusted when injected by your CDN or reverse proxy, not by arbitrary clients.
+
 # Core API (any runtime)
 
 ```bash
