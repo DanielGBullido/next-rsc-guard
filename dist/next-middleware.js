@@ -1,6 +1,6 @@
 import {
   validateRsc
-} from "./chunk-2ZNMYK7A.js";
+} from "./chunk-4JQRHG47.js";
 
 // src/next-middleware.ts
 async function guardNextMiddleware(req, opts) {

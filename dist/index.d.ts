@@ -1,25 +1,6 @@
-/**
- * next-rsc-guard (core)
- *
- * This library validates coherence of Next.js App Router RSC (_rsc) cache-busting param
- * with Flight request headers.
- *
- * Important:
- * - _rsc is NOT a security token in Next.js.
- * - This library provides pragmatic validation to mitigate bots / cache explosion.
- */
 type HeaderBag = Headers | Record<string, string | undefined> | Array<[string, string]>;
-/**
- * Minimal heuristic:
- * - rsc: "1"
- * - next-router-state-tree present
- */
-declare function isFlightRequest(headers: HeaderBag): boolean;
-/**
- * Removes the internal Next.js cache-busting query param (_rsc by default).
- * Returns a relative URL (path + query + hash).
- */
-declare function stripRsc(inputUrl: string, paramName?: string): string;
+declare function getHeader(headers: HeaderBag, name: string): string | undefined;
+
 type RscGuardAction = "pass" | "strip" | "block";
 interface RscGuardOptions {
     rscQueryParam?: string;
@@ -55,7 +36,18 @@ interface RscValidationResult {
     strippedUrl?: string;
 }
 /**
- * Compute the expected _rsc value from headers, mirroring Next's computeCacheBustingSearchParam:
+ * Minimal heuristic:
+ * - rsc: "1"
+ * - next-router-state-tree present
+ */
+declare function isFlightRequest(headers: HeaderBag): boolean;
+/**
+ * Removes the internal Next.js cache-busting query param (_rsc by default).
+ * Returns a relative URL (path + query + hash).
+ */
+declare function stripRsc(inputUrl: string, paramName?: string): string;
+/**
+ * Compute expected _rsc from headers, mirroring Next's computeCacheBustingSearchParam:
  * hash of: [prefetch, segmentPrefetch, stateTree, nextUrl].join(',')
  *
  * If the input signals are empty, returns '' (cannot compute reliably).
@@ -70,4 +62,4 @@ declare function computeExpectedRsc(headers: HeaderBag, opts?: RscGuardOptions):
  */
 declare function validateRsc(inputUrl: string, headers: HeaderBag, opts?: RscGuardOptions): RscValidationResult;
 
-export { type HeaderBag, type RscGuardAction, type RscGuardOptions, type RscValidationResult, computeExpectedRsc, isFlightRequest, stripRsc, validateRsc };
+export { type HeaderBag, type RscGuardAction, type RscGuardOptions, type RscValidationResult, computeExpectedRsc, getHeader, isFlightRequest, stripRsc, validateRsc };

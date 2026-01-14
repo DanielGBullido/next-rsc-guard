@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "description": "Guard/validator for Next.js App Router RSC (_rsc) cache-busting param and Flight request signals.",
   "license": "MIT",
+  "author": "danielgbullido",
   "type": "module",
+
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -19,27 +22,42 @@
       "import": "./dist/next-middleware.js"
     }
   },
+
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
+
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [],
-  "author": "danielgbullido",
+
+  "keywords": [
+    "nextjs",
+    "rsc",
+    "react-server-components",
+    "middleware",
+    "cache",
+    "cdn",
+    "security"
+  ],
+
   "devDependencies": {
     "next": "^16.1.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
   },
+
   "peerDependencies": {
     "next": ">=13.4.0"
   },
+
   "repository": {
     "type": "git",
     "url": "https://github.com/DanielGBullido/next-rsc-guard"

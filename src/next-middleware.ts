@@ -1,4 +1,4 @@
-import { validateRsc, type RscGuardOptions } from "./index";
+import { validateRsc, type RscGuardOptions } from "./rsc";
 
 export interface NextMiddlewareGuardOptions extends RscGuardOptions {
   /**

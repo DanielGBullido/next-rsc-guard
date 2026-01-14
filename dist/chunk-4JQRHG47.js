@@ -1,4 +1,4 @@
-// src/index.ts
+// src/headers.ts
 function getHeader(headers, name) {
   const key = name.toLowerCase();
   if (typeof headers.get === "function") {
@@ -11,16 +11,8 @@ function getHeader(headers, name) {
   const obj = headers;
   return obj[name] ?? obj[key];
 }
-function isFlightRequest(headers) {
-  const rsc = getHeader(headers, "rsc");
-  const routerState = getHeader(headers, "next-router-state-tree");
-  return rsc === "1" && !!routerState;
-}
-function stripRsc(inputUrl, paramName = "_rsc") {
-  const url = new URL(inputUrl, "http://localhost");
-  url.searchParams.delete(paramName);
-  return url.pathname + (url.search ? url.search : "") + (url.hash ? url.hash : "");
-}
+
+// src/hash.ts
 function djb2Hash(str) {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
@@ -31,6 +23,8 @@ function djb2Hash(str) {
 function nextHexHash(str) {
   return djb2Hash(str).toString(36).slice(0, 5);
 }
+
+// src/rsc.ts
 function normalizeOptions(opts) {
   return {
     rscQueryParam: "_rsc",
@@ -44,6 +38,16 @@ function normalizeOptions(opts) {
     onMismatch: "strip",
     ...opts
   };
+}
+function isFlightRequest(headers) {
+  const rsc = getHeader(headers, "rsc");
+  const routerState = getHeader(headers, "next-router-state-tree");
+  return rsc === "1" && !!routerState;
+}
+function stripRsc(inputUrl, paramName = "_rsc") {
+  const url = new URL(inputUrl, "http://localhost");
+  url.searchParams.delete(paramName);
+  return url.pathname + (url.search ? url.search : "") + (url.hash ? url.hash : "");
 }
 function computeExpectedRsc(headers, opts) {
   const o = normalizeOptions(opts);
@@ -69,7 +73,8 @@ function validateRsc(inputUrl, headers, opts) {
     if (rsc !== "1" || !tree) return false;
     if (o.requireAcceptRsc) {
       const accept = getHeader(headers, "accept");
-      if (!accept || !accept.toLowerCase().includes("text/x-component")) return false;
+      if (!accept || !accept.toLowerCase().includes("text/x-component"))
+        return false;
     }
     return true;
   })();
@@ -134,9 +139,10 @@ function validateRsc(inputUrl, headers, opts) {
 }
 
 export {
+  getHeader,
   isFlightRequest,
   stripRsc,
   computeExpectedRsc,
   validateRsc
 };
-//# sourceMappingURL=chunk-2ZNMYK7A.js.map
+//# sourceMappingURL=chunk-4JQRHG47.js.map

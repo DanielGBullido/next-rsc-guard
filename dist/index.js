@@ -1,11 +1,13 @@
 import {
   computeExpectedRsc,
+  getHeader,
   isFlightRequest,
   stripRsc,
   validateRsc
-} from "./chunk-2ZNMYK7A.js";
+} from "./chunk-4JQRHG47.js";
 export {
   computeExpectedRsc,
+  getHeader,
   isFlightRequest,
   stripRsc,
   validateRsc
